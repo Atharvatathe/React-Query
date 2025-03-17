@@ -16,7 +16,8 @@ export const FetchRQ = () => {
 
   const { data, isPending, isError, error } = useQuery({
     queryKey: ["posts"], //work like dependncy array
-    queryFn: getPostsData, // like useEffect
+    queryFn: getPostsData, // like
+    // gcTime: 1000, // garbage collection time
   });
 
   // Conditional rendering based on loading, error, and posts data
