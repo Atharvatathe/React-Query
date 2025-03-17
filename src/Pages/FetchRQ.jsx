@@ -18,8 +18,9 @@ export const FetchRQ = () => {
     queryKey: ["posts"], //work like dependncy array
     queryFn: getPostsData, // like
     // gcTime: 1000, // garbage collection time - cleare the data from cache after specific time and take data from server
-    staleTime: 10000, // stale time - Will not call api for specific time interval and will colec data from cache
-    // refetchInterval: 1000, // polling - call API after specific interval
+    // staleTime: 10000, // stale time - Will not call api for specific time interval and will colec data from cache
+    refetchInterval: 1000, // polling - call API after specific interval
+    refetchIntervalInBackground: true, // It will continue polling even if you change the current Tab
   });
 
   // Conditional rendering based on loading, error, and posts data
