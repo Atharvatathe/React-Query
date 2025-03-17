@@ -6,7 +6,7 @@ export const FetchRQ = () => {
   // Fetch posts data function
   const getPostsData = async () => {
     try {
-      const res = await fetchPosts(0);
+      const res = await fetchPosts();
       return res ? res : [];
     } catch (error) {
       console.error(error);
@@ -14,10 +14,14 @@ export const FetchRQ = () => {
     }
   };
 
-  const { data } = useQuery({
+  const { data, isPending, isError, error } = useQuery({
     queryKey: ["posts"], //work like dependncy array
     queryFn: getPostsData, // like useEffect
   });
+
+  // Conditional rendering based on loading, error, and posts data
+  if (isPending) return <p>Loading...</p>;
+  if (isError) return <p>Error :{error.message || "Something went wrong!"}</p>;
 
   return (
     <div>
