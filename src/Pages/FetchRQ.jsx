@@ -18,6 +18,7 @@ export const FetchRQ = () => {
     queryKey: ["posts"], //work like dependncy array
     queryFn: getPostsData, // like
     // gcTime: 1000, // garbage collection time
+    staleTime: 10000, // stale time
   });
 
   // Conditional rendering based on loading, error, and posts data
