@@ -1,13 +1,15 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { deletePost, fetchPosts, updatePost } from "../API/api.jsx";
 import { NavLink } from "react-router-dom";
+import { useState } from "react";
 
 export const FetchRQ = () => {
+  const [pageNumber, setPageNumber] = useState(0);
   // Fetch posts data function
   const getPostsData = async () => {
     try {
-      const res = await fetchPosts();
+      const res = await fetchPosts(pageNumber);
       return res ? res : [];
     } catch (error) {
       console.error(error);
@@ -16,12 +18,13 @@ export const FetchRQ = () => {
   };
 
   const { data, isPending, isError, error } = useQuery({
-    queryKey: ["posts"], //work like dependncy array
+    queryKey: ["posts", pageNumber], //work like dependncy array
     queryFn: getPostsData, // like
     // gcTime: 1000, // garbage collection time - cleare the data from cache after specific time and take data from server
     // staleTime: 10000, // stale time - Will not call api for specific time interval and will colec data from cache
     // refetchInterval: 1000, // polling - call API after specific interval
     // refetchIntervalInBackground: true, // It will continue polling even if you change the current Tab
+    placeholderData: keepPreviousData, // this is used with pageinition to show previous data insted of loading when click on next
   });
 
   // Conditional rendering based on loading, error, and posts data
@@ -44,6 +47,17 @@ export const FetchRQ = () => {
           );
         })}
       </ul>
+
+      <div className="pagination-section container">
+        <button
+          disabled={pageNumber === 0 ? true : false}
+          onClick={() => setPageNumber((prev) => prev - 3)}
+        >
+          Prev
+        </button>
+        <p>{pageNumber / 3 + 1}</p>
+        <button onClick={() => setPageNumber((prev) => prev + 3)}>Next</button>
+      </div>
     </div>
   );
 };
