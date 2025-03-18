@@ -35,7 +35,7 @@ export const FetchRQ = () => {
     mutationFn: (id) => deletePost(id),
     onSuccess: (data, id) => {
       queryClient.setQueryData(["posts", pageNumber], (curElem) => {
-        return curElem?.filter((post) => post.id !== id);
+        return curElem?.fwoilter((post) => post.id !== id);
       });
     },
   });
