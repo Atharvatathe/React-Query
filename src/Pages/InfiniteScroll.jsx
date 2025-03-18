@@ -1,6 +1,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { fetchUsers } from "../API/api";
 import { useEffect } from "react";
+import { useInView } from "react-intersection-observer";
 
 export const InfiniteScroll = () => {
   const { data, hasNextPage, fetchNextPage, status, isFetchingNextPage } =
@@ -12,20 +13,30 @@ export const InfiniteScroll = () => {
       },
     });
 
-  const handleScroll = () => {
-    const bottom =
-      window.innerHeight + window.scrollY >=
-      document.documentElement.scrollHeight - 1;
+  //   const handleScroll = () => {
+  //     const bottom =
+  //       window.innerHeight + window.scrollY >=
+  //       document.documentElement.scrollHeight - 1;
 
-    if (bottom && hasNextPage) {
-      fetchNextPage();
-    }
-  };
+  //     if (bottom && hasNextPage) {
+  //       fetchNextPage();
+  //     }
+  //   };
+
+  //   useEffect(() => {
+  //     window.addEventListener("scroll", handleScroll);
+  //     return () => window.removeEventListener("scroll", handleScroll);
+  //   }, [hasNextPage]);
+
+  const { ref, inView } = useInView({
+    threshold: 1,
+  });
 
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [hasNextPage]);
+    if (inView && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, fetchNextPage, hasNextPage]);
 
   if (status === "loading") return <div>Loading...</div>;
   if (status === "error") return <div>Error fetching data</div>;
@@ -52,13 +63,13 @@ export const InfiniteScroll = () => {
           ))}
         </ul>
       ))}
-      {/* <div ref={ref} style={{ padding: "20px", textAlign: "center" }}>
+      <div ref={ref} style={{ padding: "20px", textAlign: "center" }}>
         {isFetchingNextPage
           ? "Loading more..."
           : hasNextPage
           ? "Scroll down to load more"
           : "No more users"}
-      </div> */}
+      </div>
     </div>
   );
 };
