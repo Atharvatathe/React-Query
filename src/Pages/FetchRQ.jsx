@@ -1,4 +1,4 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { deletePost, fetchPosts, updatePost } from "../API/api.jsx";
 import { NavLink } from "react-router-dom";
@@ -6,6 +6,9 @@ import { useState } from "react";
 
 export const FetchRQ = () => {
   const [pageNumber, setPageNumber] = useState(0);
+
+  const queryClient = useQueryClient();
+
   // Fetch posts data function
   const getPostsData = async () => {
     try {
@@ -27,6 +30,16 @@ export const FetchRQ = () => {
     placeholderData: keepPreviousData, // this is used with pageinition to show previous data insted of loading when click on next
   });
 
+  //! mutation function to delete the post
+  const deleteMutation = useMutation({
+    mutationFn: (id) => deletePost(id),
+    onSuccess: (data, id) => {
+      queryClient.setQueryData(["posts", pageNumber], (curElem) => {
+        return curElem?.filter((post) => post.id !== id);
+      });
+    },
+  });
+
   // Conditional rendering based on loading, error, and posts data
   if (isPending) return <p>Loading...</p>;
   if (isError) return <p>Error :{error.message || "Something went wrong!"}</p>;
@@ -43,6 +56,7 @@ export const FetchRQ = () => {
                 <p>{title}</p>
                 <p>{body}</p>
               </NavLink>
+              <button onClick={() => deleteMutation.mutate(id)}>Delete</button>
             </li>
           );
         })}
